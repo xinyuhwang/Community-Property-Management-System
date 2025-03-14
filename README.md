@@ -51,7 +51,7 @@ This web application project, the Community Property Management System, is desig
 ### Collaboration Workflow
 1. Clone the Repository:
 ```
-
+git clone https://github.com/xinyuhwang/Community-Property-Management-System.git
 ```
 2. Create a Feature Branch:
 ```
