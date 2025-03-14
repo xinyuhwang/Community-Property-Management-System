@@ -36,9 +36,6 @@ This web application project, the Community Property Management System, is desig
 * **Author:** Xinyu Wang, Hao Zhang, Qiu Li, Zhaorui Wang
 * **Mentor:** Jay
 
-### Dataset
-[iris.csv](https://github.com/ErdunE/CS5800-Final-Project/blob/main/iris.csv)
-
 ### Branching Strategy
 * Main Branch: main
 * Feature Branch Naming Convention: workspace-[workspace-name] (e.g., workspace-xinyu)
