@@ -1,133 +1,153 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Container, Typography, Tabs, Tab, Box } from "@mui/material";
-import Dashboard from "../components/Dashboard";
-import AnnouncementForm from "../components/AnnouncementForm";
-import { AuthContext } from "../contexts/AuthContext";
+import React, { useState, useEffect } from "react";
+import { Box, Container, Grid, Typography, Button } from "@mui/material";
+import AlertList from "../components/AlertList";
+import EventCalendar from "../components/EventCalendar";
+import EventForm from "../components/EventForm";
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
-export default function AdminPage() {
-  const [value, setValue] = useState(0);
+const AdminPage = ({ user }) => {
   const [events, setEvents] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
-  const { user } = useContext(AuthContext);
+  const [alerts, setAlerts] = useState([]);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
 
+  // Mock data loading
   useEffect(() => {
-    // In a real app, these would be API calls
+    // Simulate API call
     const mockEvents = [
       {
         id: 1,
-        title: "Community BBQ",
-        description: "Annual neighborhood barbecue in the common area",
-        date: new Date(Date.now() + 86400000 * 3).toISOString(),
-        startTime: new Date(Date.now() + 86400000 * 3).setHours(12, 0, 0, 0),
-        endTime: new Date(Date.now() + 86400000 * 3).setHours(16, 0, 0, 0),
-        location: "Common Area",
-        organizer: "Community Board",
+        title: "Community Meeting",
+        date: new Date(2023, 5, 15, 18, 0),
+        location: "Community Hall",
+        description:
+          "Monthly community meeting to discuss neighborhood issues.",
       },
       {
         id: 2,
-        title: "Yoga Class",
-        description: "Weekly yoga session in the gym",
-        date: new Date(Date.now() + 86400000 * 5).toISOString(),
-        startTime: new Date(Date.now() + 86400000 * 5).setHours(9, 0, 0, 0),
-        endTime: new Date(Date.now() + 86400000 * 5).setHours(10, 0, 0, 0),
-        location: "Gym",
-        organizer: "Fitness Committee",
+        title: "Yard Sale",
+        date: new Date(2023, 5, 17, 8, 0),
+        location: "Main Street",
+        description: "Annual community yard sale event.",
       },
     ];
 
-    const mockAnnouncements = [
+    const mockAlerts = [
       {
         id: 1,
-        title: "Parking Lot Cleaning",
-        message:
-          "The parking lot will be cleaned on Friday. Please move your vehicles by 7am.",
-        date: new Date(Date.now() - 86400000).toISOString(),
+        title: "Power Outage",
+        message: "Scheduled power maintenance on June 10 from 9 AM to 3 PM.",
+        date: new Date(2023, 5, 8),
         priority: "high",
       },
       {
         id: 2,
-        title: "Welcome New Residents",
+        title: "Water Shutoff",
         message:
-          "Please welcome the Smith family moving into unit 4B this weekend!",
-        date: new Date(Date.now() - 86400000 * 2).toISOString(),
-        priority: "normal",
+          "Water will be temporarily shut off for repairs on June 12 from 1 PM to 4 PM.",
+        date: new Date(2023, 5, 9),
+        priority: "medium",
       },
     ];
 
     setEvents(mockEvents);
-    setAnnouncements(mockAnnouncements);
+    setAlerts(mockAlerts);
   }, []);
 
-  const handleEventUpdate = (updatedEvent) => {
-    // In a real app, this would be an API call
-    setEvents(
-      events.map((event) =>
-        event.id === updatedEvent.id ? updatedEvent : event
-      )
-    );
+  const handleAddEvent = () => {
+    setEditingEvent(null);
+    setShowEventForm(true);
   };
 
-  const handleAnnouncementCreate = (newAnnouncement) => {
-    // In a real app, this would be an API call
-    setAnnouncements([
-      {
-        id: announcements.length + 1,
-        ...newAnnouncement,
-      },
-      ...announcements,
-    ]);
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setShowEventForm(true);
   };
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleSaveEvent = (event) => {
+    if (event.id) {
+      // Update existing event
+      setEvents(events.map((e) => (e.id === event.id ? event : e)));
+    } else {
+      // Add new event
+      const newId = Math.max(...events.map((e) => e.id), 0) + 1;
+      setEvents([...events, { ...event, id: newId }]);
+    }
+    setShowEventForm(false);
+  };
+
+  const handleCancelEvent = () => {
+    setShowEventForm(false);
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    setEvents(events.filter((e) => e.id !== eventId));
+  };
+
+  const handleAddAlert = (alert) => {
+    const newId = Math.max(...alerts.map((a) => a.id), 0) + 1;
+    setAlerts([...alerts, { ...alert, id: newId, date: new Date() }]);
   };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Admin Dashboard
+        Administrator Dashboard
+      </Typography>
+      <Typography variant="subtitle1" gutterBottom sx={{ mb: 3 }}>
+        Welcome, {user.name}
       </Typography>
 
-      <Tabs value={value} onChange={handleChange} aria-label="admin tabs">
-        <Tab label="Overview" {...a11yProps(0)} />
-        <Tab label="Post Announcement" {...a11yProps(1)} />
-      </Tabs>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Box sx={{ mb: 3 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Community Events
+              </Typography>
+              <Button variant="contained" onClick={handleAddEvent}>
+                Add Event
+              </Button>
+            </Box>
 
-      <TabPanel value={value} index={0}>
-        <Dashboard
-          events={events}
-          announcements={announcements}
-          onEventUpdate={handleEventUpdate}
-          onAnnouncementCreate={handleAnnouncementCreate}
-          role="admin"
-        />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <AnnouncementForm onSubmit={handleAnnouncementCreate} />
-      </TabPanel>
+            {showEventForm ? (
+              <EventForm
+                event={editingEvent}
+                onSave={handleSaveEvent}
+                onCancel={handleCancelEvent}
+              />
+            ) : (
+              <EventCalendar
+                events={events}
+                editable={true}
+                onEdit={handleEditEvent}
+                onDelete={handleDeleteEvent}
+              />
+            )}
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Emergency Alerts
+            </Typography>
+            <AlertList
+              alerts={alerts}
+              adminMode={true}
+              onAddAlert={handleAddAlert}
+            />
+          </Box>
+        </Grid>
+      </Grid>
     </Container>
   );
-}
+};
+
+export default AdminPage;

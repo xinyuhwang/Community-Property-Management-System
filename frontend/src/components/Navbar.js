@@ -1,40 +1,27 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { AuthContext } from "../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
-export default function Navbar() {
-  const { user, role, logout } = useContext(AuthContext);
-
+const Navbar = ({ user, onLogout }) => {
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Community Portal
+          Community Dashboard
         </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          {!user && (
-            <Button color="inherit" component={Link} to="/login">
-              Login
-            </Button>
-          )}
-          {user && role === "resident" && (
-            <Button color="inherit" component={Link} to="/resident">
-              Resident Dashboard
-            </Button>
-          )}
-          {user && role === "admin" && (
-            <Button color="inherit" component={Link} to="/admin">
-              Admin Dashboard
-            </Button>
-          )}
-          {user && (
-            <Button color="inherit" onClick={logout}>
+        {user && (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="subtitle1" sx={{ mr: 2 }}>
+              Welcome, {user.name}
+            </Typography>
+            <Button color="inherit" onClick={onLogout}>
               Logout
             </Button>
-          )}
-        </Box>
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   );
-}
+};
+
+export default Navbar;

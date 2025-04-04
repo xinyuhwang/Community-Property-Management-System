@@ -1,142 +1,110 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Container, Typography, Tabs, Tab, Box } from "@mui/material";
-import Dashboard from "../components/Dashboard";
-import BookingForm from "../components/BookingForm";
-import MaintenanceForm from "../components/MaintenanceForm";
-import { AuthContext } from "../contexts/AuthContext";
+import React, { useState, useEffect } from "react";
+import { Box, Container, Grid, Typography } from "@mui/material";
+import AlertList from "../components/AlertList";
+import EventCalendar from "../components/EventCalendar";
+import NotificationList from "../components/NotificationList";
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
-export default function ResidentPage() {
-  const [value, setValue] = useState(0);
+const ResidentPage = ({ user }) => {
   const [events, setEvents] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
-  const [bookings, setBookings] = useState([]);
-  const [maintenanceRequests, setMaintenanceRequests] = useState([]);
-  const { user } = useContext(AuthContext);
+  const [alerts, setAlerts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
+  // Mock data loading
   useEffect(() => {
-    // In a real app, these would be API calls
+    // Simulate API call
     const mockEvents = [
       {
         id: 1,
-        title: "Community BBQ",
-        description: "Annual neighborhood barbecue in the common area",
-        date: new Date(Date.now() + 86400000 * 3).toISOString(),
-        startTime: new Date(Date.now() + 86400000 * 3).setHours(12, 0, 0, 0),
-        endTime: new Date(Date.now() + 86400000 * 3).setHours(16, 0, 0, 0),
-        location: "Common Area",
-        organizer: "Community Board",
+        title: "Community Meeting",
+        date: new Date(2023, 5, 15, 18, 0),
+        location: "Community Hall",
+        description:
+          "Monthly community meeting to discuss neighborhood issues.",
       },
       {
         id: 2,
-        title: "Yoga Class",
-        description: "Weekly yoga session in the gym",
-        date: new Date(Date.now() + 86400000 * 5).toISOString(),
-        startTime: new Date(Date.now() + 86400000 * 5).setHours(9, 0, 0, 0),
-        endTime: new Date(Date.now() + 86400000 * 5).setHours(10, 0, 0, 0),
-        location: "Gym",
-        organizer: "Fitness Committee",
+        title: "Yard Sale",
+        date: new Date(2023, 5, 17, 8, 0),
+        location: "Main Street",
+        description: "Annual community yard sale event.",
       },
     ];
 
-    const mockAnnouncements = [
+    const mockAlerts = [
       {
         id: 1,
-        title: "Parking Lot Cleaning",
-        message:
-          "The parking lot will be cleaned on Friday. Please move your vehicles by 7am.",
-        date: new Date(Date.now() - 86400000).toISOString(),
+        title: "Power Outage",
+        message: "Scheduled power maintenance on June 10 from 9 AM to 3 PM.",
+        date: new Date(2023, 5, 8),
         priority: "high",
       },
       {
         id: 2,
-        title: "Welcome New Residents",
+        title: "Water Shutoff",
         message:
-          "Please welcome the Smith family moving into unit 4B this weekend!",
-        date: new Date(Date.now() - 86400000 * 2).toISOString(),
-        priority: "normal",
+          "Water will be temporarily shut off for repairs on June 12 from 1 PM to 4 PM.",
+        date: new Date(2023, 5, 9),
+        priority: "medium",
+      },
+    ];
+
+    const mockNotifications = [
+      {
+        id: 1,
+        message: "New community guidelines have been posted.",
+        date: new Date(2023, 5, 5),
+        read: false,
+      },
+      {
+        id: 2,
+        message: "Your maintenance request has been received.",
+        date: new Date(2023, 5, 6),
+        read: true,
       },
     ];
 
     setEvents(mockEvents);
-    setAnnouncements(mockAnnouncements);
+    setAlerts(mockAlerts);
+    setNotifications(mockNotifications);
   }, []);
-
-  const handleBookingSubmit = (bookingData) => {
-    // In a real app, this would be an API call
-    const newBooking = {
-      id: bookings.length + 1,
-      ...bookingData,
-      resident: user.email,
-      status: "pending",
-    };
-    setBookings([...bookings, newBooking]);
-    alert("Booking submitted successfully!");
-  };
-
-  const handleMaintenanceSubmit = (maintenanceData) => {
-    // In a real app, this would be an API call
-    const newRequest = {
-      id: maintenanceRequests.length + 1,
-      ...maintenanceData,
-      resident: user.email,
-      status: "requested",
-    };
-    setMaintenanceRequests([...maintenanceRequests, newRequest]);
-    alert("Maintenance request submitted successfully!");
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
         Resident Dashboard
       </Typography>
+      <Typography variant="subtitle1" gutterBottom sx={{ mb: 3 }}>
+        Welcome back, {user.name}
+      </Typography>
 
-      <Tabs value={value} onChange={handleChange} aria-label="resident tabs">
-        <Tab label="Overview" {...a11yProps(0)} />
-        <Tab label="Book Common Room" {...a11yProps(1)} />
-        <Tab label="Request Maintenance" {...a11yProps(2)} />
-      </Tabs>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Upcoming Events
+            </Typography>
+            <EventCalendar events={events} editable={false} />
+          </Box>
+        </Grid>
 
-      <TabPanel value={value} index={0}>
-        <Dashboard
-          events={events}
-          announcements={announcements}
-          role="resident"
-        />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <BookingForm onSubmit={handleBookingSubmit} />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <MaintenanceForm onSubmit={handleMaintenanceSubmit} />
-      </TabPanel>
+        <Grid item xs={12} md={4}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Emergency Alerts
+            </Typography>
+            <AlertList alerts={alerts} />
+          </Box>
+
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Notifications
+            </Typography>
+            <NotificationList notifications={notifications} />
+          </Box>
+        </Grid>
+      </Grid>
     </Container>
   );
-}
+};
+
+export default ResidentPage;
