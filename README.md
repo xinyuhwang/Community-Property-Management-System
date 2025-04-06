@@ -28,12 +28,12 @@
 ### Project Overview
 This web application project, the Community Property Management System, is designed to streamline property management tasks through five key features: a dashboard for announcements and updates, a calendar schedule for booking and maintenance planning, a discussion board for resident interactions, a chat thread for trustee communication, and payment tools for secure fee transactions.
 ### Team Members
-* **Xinyu Wang**
-* **Hao Zhang**
-* **Qiu Li**
-* **Zhaorui Wang**
+* **Xinyu Wang**: Team Lead, Manager, Frontend Developer
+* **Qiu Li**: Backend Developer
+* **Hao Zhang**: Frontend Developer
+
 ### Basic Information
-* **Author:** Xinyu Wang, Hao Zhang, Qiu Li, Zhaorui Wang
+* **Author:** Xinyu Wang, Qiu Li, Hao Zhang
 * **Mentor:** Jay
 
 ### Branching Strategy
